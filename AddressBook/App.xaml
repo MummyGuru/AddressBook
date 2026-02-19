@@ -1,0 +1,10 @@
+﻿<Application x:Class="AddressBook.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AddressBook.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <converters:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
+    </Application.Resources>
+</Application>
