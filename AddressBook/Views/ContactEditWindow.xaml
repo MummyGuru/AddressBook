@@ -3,66 +3,96 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Редактирование контакта" Height="550" Width="450"
         WindowStartupLocation="CenterOwner" Background="#F5F5F5">
-	<Grid Margin="20">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
 
-		<TextBlock Grid.Row="0" Text="Информация о контакте" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel>
+                            <Border BorderBrush="Red" BorderThickness="1">
+                                <AdornedElementPlaceholder/>
+                            </Border>
+                            <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red" FontSize="10" Margin="2,0,0,0"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
 
-		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-			<StackPanel>
-				<Border Background="White" Padding="15" CornerRadius="5" Margin="0,0,0,10">
-					<StackPanel>
-						<TextBlock Text="Фото контакта" FontWeight="Bold" Margin="0,0,0,10"/>
-						<Image Source="{Binding Contact.PhotoPath, Converter={StaticResource StringToImageSourceConverter}}"
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Информация о контакте" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Background="White" Padding="15" CornerRadius="5" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Фото контакта" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <Image Source="{Binding Contact.PhotoPath, Converter={StaticResource StringToImageSourceConverter}}"
                                Width="150" Height="150"
                                Stretch="UniformToFill"
                                HorizontalAlignment="Center"
                                Margin="0,0,0,10">
-							<Image.Style>
-								<Style TargetType="Image">
-									<Setter Property="Visibility" Value="Visible"/>
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Contact.PhotoPath}" Value="">
-											<Setter Property="Visibility" Value="Hidden"/>
-										</DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</Image.Style>
-						</Image>
-						<Button Content="Выбрать фото" Command="{Binding BrowsePhotoCommand}" HorizontalAlignment="Center"/>
-					</StackPanel>
-				</Border>
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Contact.PhotoPath}" Value="">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <Button Content="Выбрать фото" Command="{Binding BrowsePhotoCommand}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
 
-				<Border Background="White" Padding="15" CornerRadius="5" Margin="0,0,0,10">
-					<StackPanel>
-						<TextBlock Text="Имя *" Margin="0,0,0,5"/>
-						<TextBox Text="{Binding Contact.FirstName, UpdateSourceTrigger=PropertyChanged}" Padding="10" Margin="0,0,0,10"/>
-						<TextBlock Text="Фамилия" Margin="0,0,0,5"/>
-						<TextBox Text="{Binding Contact.LastName, UpdateSourceTrigger=PropertyChanged}" Padding="10" Margin="0,0,0,10"/>
-						<TextBlock Text="Телефон" Margin="0,0,0,5"/>
-						<TextBox Text="{Binding Contact.Phone, UpdateSourceTrigger=PropertyChanged}" Padding="10" Margin="0,0,0,10"/>
-						<TextBlock Text="Email" Margin="0,0,0,5"/>
-						<TextBox Text="{Binding Contact.Email, UpdateSourceTrigger=PropertyChanged}" Padding="10" Margin="0,0,0,10"/>
-					</StackPanel>
-				</Border>
+                <Border Background="White" Padding="15" CornerRadius="5" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Имя *" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Contact.FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
+                                 Padding="10" Margin="0,0,0,10"/>
 
-				<Border Background="White" Padding="15" CornerRadius="5">
-					<StackPanel>
-						<TextBlock Text="Категория" Margin="0,0,0,5"/>
-						<ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Contact.Category}" Padding="10" Margin="0,0,0,10"/>
-						<CheckBox Content="Активный контакт" IsChecked="{Binding Contact.IsActive}" Margin="0,0,0,10"/>
-					</StackPanel>
-				</Border>
-			</StackPanel>
-		</ScrollViewer>
+                        <TextBlock Text="Фамилия" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Contact.LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
+                                 Padding="10" Margin="0,0,0,10"/>
 
-		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-			<Button Content="Сохранить" Command="{Binding SaveCommand}" Width="120" Background="#28A745"/>
-			<Button Content="Отмена" Command="{Binding CancelCommand}" Width="120" Background="#6C757D"/>
-		</StackPanel>
-	</Grid>
+                        <TextBlock Text="Телефон" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Contact.Phone, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
+                                 Padding="10" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Email" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Contact.Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
+                                 Padding="10" Margin="0,0,0,10"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="15" CornerRadius="5">
+                    <StackPanel>
+                        <TextBlock Text="Категория" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Contact.Category}" Padding="10" Margin="0,0,0,10"/>
+                        <CheckBox Content="Активный контакт" IsChecked="{Binding Contact.IsActive}" Margin="0,0,0,10"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Сохранить" Command="{Binding SaveCommand}" Width="120" Background="#28A745"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}" Width="120" Background="#6C757D"/>
+        </StackPanel>
+    </Grid>
 </Window>

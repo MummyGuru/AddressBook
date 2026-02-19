@@ -20,12 +20,14 @@ namespace AddressBook.ViewModels
             Contact = contact;
             _dataService = dataService;
 
-            Categories = new ObservableCollection<string>();
-            Categories.Add("Общее");
-            Categories.Add("Друзья");
-            Categories.Add("Работа");
-            Categories.Add("Семья");
-            Categories.Add("Клиенты");
+            Categories = new ObservableCollection<string>
+            {
+                "Общее",
+                "Друзья",
+                "Работа",
+                "Семья",
+                "Клиенты"
+            };
 
             SaveCommand = new RelayCommand(Save, CanSave);
             CancelCommand = new RelayCommand(Cancel);
@@ -38,7 +40,10 @@ namespace AddressBook.ViewModels
 
         private bool CanSave(object parameter)
         {
-            return !string.IsNullOrEmpty(Contact.FirstName);
+            return string.IsNullOrEmpty(Contact["FirstName"]) &&
+                   string.IsNullOrEmpty(Contact["LastName"]) &&
+                   string.IsNullOrEmpty(Contact["Email"]) &&
+                   string.IsNullOrEmpty(Contact["Phone"]);
         }
 
         private void Save(object parameter)
@@ -73,14 +78,16 @@ namespace AddressBook.ViewModels
 
         private void BrowsePhoto(object parameter)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp";
-            dialog.Title = "Выберите фото";
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp",
+                Title = "Выберите фото"
+            };
 
             if (dialog.ShowDialog() == true)
             {
                 Contact.PhotoPath = dialog.FileName;
-                OnPropertyChanged("Contact");
+                OnPropertyChanged(nameof(Contact));
             }
         }
 
@@ -88,10 +95,7 @@ namespace AddressBook.ViewModels
 
         protected void OnPropertyChanged(string name)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
